@@ -17,7 +17,6 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
 
 
-if __name__ == "main":
 if __name__ == "__main__":
     HOST, PORT = "localhost", 9999
 
