@@ -2,7 +2,7 @@ import socket
 import ctypes
 
 def client():
-    HOST, PORT = "localhost", 9999
+    HOST, PORT = "127.0.0.1", 12345
 
     #Join TCP/IP server
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
