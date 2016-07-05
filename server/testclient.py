@@ -9,7 +9,8 @@ def client():
 
     try:
         sock.connect((HOST, PORT))
-        sock.sendall(ctypes.c_bool(False))
+        sock.sendall(ctypes.c_bool(True))
+        sock.sendall(ctypes.c_char(160))
         received = sock.recv(1)
         print(received)
     finally:
