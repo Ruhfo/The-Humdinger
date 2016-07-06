@@ -1,8 +1,11 @@
 import socket
 import ctypes
 
+
+#Very basic client, only for testing server's functionality
+
 def client():
-    HOST, PORT = "127.0.0.1", 12345
+    HOST, PORT = str(socket.gethostbyname(socket.gethostname())), 12345
 
     #Join TCP/IP server
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,6 +21,3 @@ def client():
 
 if __name__ == "__main__":
     client()
-
-
-    

@@ -7,13 +7,12 @@ import ctypes
 #UI
 import tkinter as tk
 
-#keypress
+#windows keypress
 import win32api
 import win32con
 
 #Define constants
-HOST = "127.0.0.1" #Use this for testing purpouses
-#for production: str(socket.gethostbyname(socket.gethostname()))
+HOST = str(socket.gethostbyname(socket.gethostname())) #For local testing use '127.0.0.1'
 PORT = 12345
 
 #Define color constants
@@ -33,7 +32,7 @@ class TCPHandler(socketserver.BaseRequestHandler):
         self.alive = bool(ord(self.request.recv(1)))
         if self.alive == True:
             self.data = ord(self.request.recv(1))
-            print(self.data)
+            app.debugg_write("{} sent: {}".format(self.client_address[0], str(self.data)))
             send_key(self.data, True)
             
         self.request.sendall(ctypes.c_bool(True)) #Send Keepalive ping
@@ -51,6 +50,9 @@ class GUIapplication(tk.Frame):
 
         statusFrame = tk.LabelFrame(self, text="server info")
         statusFrame.pack(side= tk.TOP)
+
+        debuggFrame  = tk.LabelFrame(self, text="Server messages:")
+        debuggFrame.pack(side = tk.BOTTOM)
         
         self.displayIPaddr = tk.Label(statusFrame, text=HOST)
         self.displayIPaddr.pack(side = tk.TOP)
@@ -68,7 +70,17 @@ class GUIapplication(tk.Frame):
         self.displayStatus.pack(side = tk.BOTTOM)
 
         self.toggleServer = tk.Button(self, text="Start", command = self.toggle_server)
-        self.toggleServer.pack(side= tk.BOTTOM, fill=tk.BOTH)
+        self.toggleServer.pack(side= tk.BOTTOM)
+
+        self.debuggField = tk.Text(debuggFrame, yscrollcommand=True, state=tk.DISABLED)
+        self.debuggField.pack(side = tk.BOTTOM, fill =tk.BOTH)
+
+    def debugg_write(self, text):
+        #Write debugg text inside tkinter instead of console
+        self.debuggField.config(state=tk.NORMAL)
+        self.debuggField.insert(tk.INSERT, text+"\n")
+        self.debuggField.config(state=tk.DISABLED)
+        
     def toggle_server(self):
         if self.status.get() == "OFFLINE":
             self.status.set("ONLINE")
@@ -94,13 +106,13 @@ class GUIapplication(tk.Frame):
         self.server_thread.daemon = True
         self.server_thread.start()
 
-        print("TCP/IP Server on PORT: {} with IP : {} has  been successfully started".format(PORT, HOST))
+        self.debugg_write("TCP/IP Server on PORT: {} with IP : {} has  been successfully started".format(PORT, HOST))
 
     def stop_server(self):
         self.server.shutdown()
         self.server.server_close()
         
-        print("TCP/IP server has been successfully closed")
+        self.debugg_write("TCP/IP server has been successfully closed")
        
 
 if __name__ == "__main__":
