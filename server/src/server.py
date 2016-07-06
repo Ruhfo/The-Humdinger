@@ -8,8 +8,12 @@ import ctypes
 import tkinter as tk
 
 #windows keypress
-import win32api
-import win32con
+from platform import system
+try:
+    import win32api
+    import win32con
+finally:
+    pass #Do nothing if not windows machine
 
 #Define constants
 HOST = str(socket.gethostbyname(socket.gethostname())) #For local testing use '127.0.0.1'
@@ -19,11 +23,20 @@ PORT = 12345
 COLOR_OK = "#33AA33"
 COLOR_BAD = "#AA3333"
 
+#Find out current os
+OS = system()
+
+#TODO: remove global usage of variable app (instance of GUIapplication)
+#TODO: check for win32api amd win32con before sendkey
+
 def send_key(keycode, pressed):
-    if pressed:
-        win32api.keybd_event(keycode, 0, win32con.KEYEVENTF_EXTENDEDKEY, 0)
+    if OS == 'Windows':
+        if pressed:
+            win32api.keybd_event(keycode, 0, win32con.KEYEVENTF_EXTENDEDKEY, 0)
+        else:
+            win32api.keybd_event(keycode, 0, win32con.KEYEVENTF_KEYUP, 0)
     else:
-        win32api.keybd_event(keycode, 0, win32con.KEYEVENTF_KEYUP, 0)
+        app.debugg_write("can't send keys on {}".format(OS))
 
 class TCPHandler(socketserver.BaseRequestHandler):
     """This class handles TCP requests and receives keypresses"""
@@ -73,6 +86,7 @@ class GUIapplication(tk.Frame):
         self.toggleServer.pack(side= tk.BOTTOM)
 
         self.debuggField = tk.Text(debuggFrame, yscrollcommand=True, state=tk.DISABLED)
+        self.debugg_write("The Humdinger controller app,running on {}".format(OS))
         self.debuggField.pack(side = tk.BOTTOM, fill =tk.BOTH)
 
     def debugg_write(self, text):
