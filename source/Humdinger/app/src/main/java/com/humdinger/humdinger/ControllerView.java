@@ -19,8 +19,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
     private Thread t = null;
     private SurfaceHolder holder;
     private boolean isItOK = false;
-    private ArrayList<Button> buttons = new ArrayList<Button>();
-    private Canvas canvas;
+    private ArrayList<Button> buttons = new ArrayList<>();
     Paint paint = new Paint();
 
     public ControllerView(Context context){
@@ -31,6 +30,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         paint.setColor(Color.WHITE);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(3f);
+
         //Get the size of the drawable field
         Point screenSize = new Point();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -40,25 +40,25 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         //
 
         //Add button A
-        buttons.add(new Button(0.85f*x,0.45f*y, BitmapFactory.decodeResource(getResources(), R.drawable.button_a),BitmapFactory.decodeResource(getResources(),R.drawable.button_a_pressed)));
+        buttons.add(new Button(0.85f*x,0.45f*y, BitmapFactory.decodeResource(getResources(), R.drawable.button_a),BitmapFactory.decodeResource(getResources(),R.drawable.button_a_pressed),'a'));
         //Add button B
-        buttons.add(new Button(0.775f*x,0.65f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_b),BitmapFactory.decodeResource(getResources(),R.drawable.button_b_pressed)));
+        buttons.add(new Button(0.775f*x,0.65f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_b),BitmapFactory.decodeResource(getResources(),R.drawable.button_b_pressed),'b'));
         //Add button X
-        buttons.add(new Button(0.775f*x,0.25f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_x),BitmapFactory.decodeResource(getResources(),R.drawable.button_x_pressed)));
+        buttons.add(new Button(0.775f*x,0.25f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_x),BitmapFactory.decodeResource(getResources(),R.drawable.button_x_pressed),'x'));
         //Add button Y
-        buttons.add(new Button(0.7f*x,0.45f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_y),BitmapFactory.decodeResource(getResources(),R.drawable.button_y_pressed)));
+        buttons.add(new Button(0.7f*x,0.45f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_y),BitmapFactory.decodeResource(getResources(),R.drawable.button_y_pressed),'y'));
 
         //Add start button
-        buttons.add(new Button(0.5f*x,0.4f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_start),BitmapFactory.decodeResource(getResources(),R.drawable.button_start_pressed)));
+        buttons.add(new Button(0.5f*x,0.4f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_start),BitmapFactory.decodeResource(getResources(),R.drawable.button_start_pressed),'t'));
         //Add select button
-        buttons.add(new Button(0.4f*x,0.4f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_select),BitmapFactory.decodeResource(getResources(),R.drawable.button_select_pressed)));
+        buttons.add(new Button(0.4f*x,0.4f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_select),BitmapFactory.decodeResource(getResources(),R.drawable.button_select_pressed),'y'));
 
         //Add the Directional pad
-        buttons.add(new Button(0f*x,0.35f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_dpad),BitmapFactory.decodeResource(getResources(),R.drawable.button_dpad_pressed)));
+        buttons.add(new Button(0f*x,0.35f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_dpad),BitmapFactory.decodeResource(getResources(),R.drawable.button_dpad_pressed),'w'));
         //Add the left button
-        buttons.add(new Button(0f*x,0f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_lb),BitmapFactory.decodeResource(getResources(),R.drawable.button_lb_pressed)));
+        buttons.add(new Button(0f*x,0f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_lb),BitmapFactory.decodeResource(getResources(),R.drawable.button_lb_pressed),'q'));
         //Add the right button
-        buttons.add(new Button(0.75f*x,0f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_rb),BitmapFactory.decodeResource(getResources(),R.drawable.button_rb_pressed)));
+        buttons.add(new Button(0.75f*x,0f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_rb),BitmapFactory.decodeResource(getResources(),R.drawable.button_rb_pressed),'e'));
     }
 
 
@@ -81,9 +81,10 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
             }
 
             //Returns a Canvas to draw on
-            canvas = holder.lockCanvas();
+            Canvas canvas = holder.lockCanvas();
             canvas.drawColor(Color.BLACK);
             for(Button currentButton:buttons){
+                currentButton.update();
                 canvas.drawBitmap(currentButton.currentlyDisplayed,currentButton.x,currentButton.y,null);
                 canvas.drawRect(currentButton.buttonArea,paint);
             }
@@ -115,7 +116,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         int pointerIndex = motionEvent.getActionIndex();
-        int pointerID = motionEvent.getPointerId(pointerIndex);
+        //int pointerID = motionEvent.getPointerId(pointerIndex);
         // Get the active pointer's current position
         float x = motionEvent.getX(pointerIndex);
         float y = motionEvent.getY(pointerIndex);
@@ -124,26 +125,28 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         for(Button button: buttons){
             if(button.isItTouched(x,y)){
                 selectedButton = button;
+                continue;
             }
+            button.buttonPressed = false;
         }
 
-
-        //get the action that was performed from the motionEvent
-        //Using getActionMasked instead of getAction to support multiple touches
+        //Get the action that was performed from the motionEvent
+        //Using getActionMasked to support multiple touches
         switch (motionEvent.getActionMasked()){
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:{
                 if(selectedButton != null){
-                    selectedButton.currentlyDisplayed = selectedButton.pressedBitmap;
+                    selectedButton.buttonPressed = true;
                 }
                 break;
             }
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:{
-                selectedButton.currentlyDisplayed = selectedButton.normalBitmap;
+                if(selectedButton != null){
+                    selectedButton.buttonPressed = false;
+                }
                 break;
             }
-
             case MotionEvent.ACTION_MOVE:{
                 break;
             }
