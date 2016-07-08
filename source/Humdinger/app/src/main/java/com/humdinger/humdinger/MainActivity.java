@@ -4,7 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     ControllerView drawingView;
 
@@ -12,8 +12,8 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         drawingView = new ControllerView(this);
-        //                                Hides the status bar           "Locks" the UI from moving        Makes the layout extend under default UI
-        drawingView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        //                                Hides the status bar           "Locks" the drawn UI to prevent it moving   Makes the layout extend under default UI
+        drawingView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         setContentView(drawingView);
     }
 
@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity{
 
     //When app goes to focus
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         drawingView.resume();
     }

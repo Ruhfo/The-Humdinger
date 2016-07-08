@@ -14,7 +14,7 @@ import android.view.WindowManager;
 
 import java.util.ArrayList;
 
-public class ControllerView extends SurfaceView implements Runnable, View.OnTouchListener{
+public class ControllerView extends SurfaceView implements Runnable, View.OnTouchListener {
 
     private Thread t = null;
     private SurfaceHolder holder;
@@ -22,7 +22,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
     private ArrayList<Button> buttons = new ArrayList<>();
     Paint paint = new Paint();
 
-    public ControllerView(Context context){
+    public ControllerView(Context context) {
         super(context);
         this.holder = getHolder();
         this.setOnTouchListener(this);
@@ -40,53 +40,53 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         //
 
         //Add button A
-        buttons.add(new Button(0.85f*x,0.45f*y, BitmapFactory.decodeResource(getResources(), R.drawable.button_a),BitmapFactory.decodeResource(getResources(),R.drawable.button_a_pressed),'a'));
+        buttons.add(new TapButton(0.85f * x, 0.45f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_a), BitmapFactory.decodeResource(getResources(), R.drawable.button_a_pressed), 'A'));
         //Add button B
-        buttons.add(new Button(0.775f*x,0.65f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_b),BitmapFactory.decodeResource(getResources(),R.drawable.button_b_pressed),'b'));
+        buttons.add(new TapButton(0.775f * x, 0.65f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_b), BitmapFactory.decodeResource(getResources(), R.drawable.button_b_pressed), 'B'));
         //Add button X
-        buttons.add(new Button(0.775f*x,0.25f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_x),BitmapFactory.decodeResource(getResources(),R.drawable.button_x_pressed),'x'));
+        buttons.add(new TapButton(0.775f * x, 0.25f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_x), BitmapFactory.decodeResource(getResources(), R.drawable.button_x_pressed), 'X'));
         //Add button Y
-        buttons.add(new Button(0.7f*x,0.45f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_y),BitmapFactory.decodeResource(getResources(),R.drawable.button_y_pressed),'y'));
+        buttons.add(new TapButton(0.7f * x, 0.45f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_y), BitmapFactory.decodeResource(getResources(), R.drawable.button_y_pressed), 'Y'));
 
         //Add start button
-        buttons.add(new Button(0.5f*x,0.4f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_start),BitmapFactory.decodeResource(getResources(),R.drawable.button_start_pressed),'t'));
+        buttons.add(new TapButton(0.5f * x, 0.4f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_start), BitmapFactory.decodeResource(getResources(), R.drawable.button_start_pressed), 't'));
         //Add select button
-        buttons.add(new Button(0.4f*x,0.4f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_select),BitmapFactory.decodeResource(getResources(),R.drawable.button_select_pressed),'y'));
+        buttons.add(new TapButton(0.4f * x, 0.4f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_select), BitmapFactory.decodeResource(getResources(), R.drawable.button_select_pressed), 'y'));
 
         //Add the Directional pad
-        buttons.add(new Button(0f*x,0.35f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_dpad),BitmapFactory.decodeResource(getResources(),R.drawable.button_dpad_pressed),'w'));
+        buttons.add(new DirectionalPad(0f * x, 0.35f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad), BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad_pressed), 'w', 'd', 's', 'a'));
         //Add the left button
-        buttons.add(new Button(0f*x,0f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_lb),BitmapFactory.decodeResource(getResources(),R.drawable.button_lb_pressed),'q'));
+        buttons.add(new TapButton(0f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_lb), BitmapFactory.decodeResource(getResources(), R.drawable.button_lb_pressed), 'q'));
         //Add the right button
-        buttons.add(new Button(0.75f*x,0f*y,BitmapFactory.decodeResource(getResources(),R.drawable.button_rb),BitmapFactory.decodeResource(getResources(),R.drawable.button_rb_pressed),'e'));
+        buttons.add(new TapButton(0.75f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_rb), BitmapFactory.decodeResource(getResources(), R.drawable.button_rb_pressed), 'e'));
     }
 
 
     @Override
     public void run() {
-        while(isItOK){
+        while (isItOK) {
 
-            //To save resources Let the thread sleep 80 milliseconds
+            //To save resources Let the thread sleep 100 milliseconds
             // because the app isn't animation intensive
             try {
-                Thread.sleep(80);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
             //Perform canvas drawing if there's a valid canvas to draw on
             //if there isn't start the loop again
-            if(!holder.getSurface().isValid()){
+            if (!holder.getSurface().isValid()) {
                 continue;
             }
 
             //Returns a Canvas to draw on
             Canvas canvas = holder.lockCanvas();
             canvas.drawColor(Color.BLACK);
-            for(Button currentButton:buttons){
+            for (Button currentButton : buttons) {
                 currentButton.update();
-                canvas.drawBitmap(currentButton.currentlyDisplayed,currentButton.x,currentButton.y,null);
-                canvas.drawRect(currentButton.buttonArea,paint);
+                canvas.drawBitmap(currentButton.currentlyDisplayed, currentButton.x, currentButton.y, null);
+                currentButton.drawRectagle(canvas, paint);
             }
             //Unlock it and do the actual drawing
             holder.unlockCanvasAndPost(canvas);
@@ -94,12 +94,12 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
 
     }
 
-    public void pause(){
+    public void pause() {
         isItOK = false;
-        while(true){
+        while (true) {
             try {
                 t.join();
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             break;
@@ -107,7 +107,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         t = null;
     }
 
-    public void resume(){
+    public void resume() {
         isItOK = true;
         t = new Thread(this);
         t.start();
@@ -116,14 +116,14 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         int pointerIndex = motionEvent.getActionIndex();
-        //int pointerID = motionEvent.getPointerId(pointerIndex);
+
         // Get the active pointer's current position
         float x = motionEvent.getX(pointerIndex);
         float y = motionEvent.getY(pointerIndex);
         Button selectedButton = null;
 
-        for(Button button: buttons){
-            if(button.isItTouched(x,y)){
+        for (Button button : buttons) {
+            if (button.isItTouched(x, y)) {
                 selectedButton = button;
                 continue;
             }
@@ -132,22 +132,22 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
 
         //Get the action that was performed from the motionEvent
         //Using getActionMasked to support multiple touches
-        switch (motionEvent.getActionMasked()){
+        switch (motionEvent.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_POINTER_DOWN:{
-                if(selectedButton != null){
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                if (selectedButton != null) {
                     selectedButton.buttonPressed = true;
                 }
                 break;
             }
             case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_POINTER_UP:{
-                if(selectedButton != null){
+            case MotionEvent.ACTION_POINTER_UP: {
+                if (selectedButton != null) {
                     selectedButton.buttonPressed = false;
                 }
                 break;
             }
-            case MotionEvent.ACTION_MOVE:{
+            case MotionEvent.ACTION_MOVE: {
                 break;
             }
         }
