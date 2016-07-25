@@ -4,7 +4,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-public class GameActivity extends AppCompatActivity {
+import com.humdinger.humdinger.ControllerView.ControllerView;
+
+public class ControllerActivity extends AppCompatActivity {
 
     ControllerView drawingView;
 

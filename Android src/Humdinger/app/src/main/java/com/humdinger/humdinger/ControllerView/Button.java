@@ -1,4 +1,4 @@
-package com.humdinger.humdinger;
+package com.humdinger.humdinger.ControllerView;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,6 +12,7 @@ public class Button {
     private Rect buttonArea;
     boolean buttonPressed = false;
     private char message;
+    private final String LOG_TAG = Button.class.getSimpleName();
 
     public Button(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char message) {
         this.x = x;
@@ -33,7 +34,7 @@ public class Button {
         return buttonArea.contains((int) x, (int) y);
     }
 
-    public void drawRectagle(Canvas canvas, Paint paint) {
+    public void drawRectangle(Canvas canvas, Paint paint) {
         canvas.drawRect(this.buttonArea, paint);
     }
 
@@ -45,7 +46,7 @@ public class Button {
     }
 
     public void sendMessage(char message) {
-        Log.v("Message", "I am sending " + message);
+        Log.v(LOG_TAG, "I am sending " + message);
     }
 }
 

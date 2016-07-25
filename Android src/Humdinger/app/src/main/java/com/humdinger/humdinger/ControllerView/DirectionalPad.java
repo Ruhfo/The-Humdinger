@@ -1,9 +1,11 @@
-package com.humdinger.humdinger;
+package com.humdinger.humdinger.ControllerView;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+
+import com.humdinger.humdinger.ControllerView.Button;
 
 public class DirectionalPad extends Button {
 
@@ -32,7 +34,7 @@ public class DirectionalPad extends Button {
     }
 
     @Override
-    public void drawRectagle(Canvas canvas, Paint paint) {
+    public void drawRectangle(Canvas canvas, Paint paint) {
         canvas.drawRect(buttonAreaUp, paint);
         canvas.drawRect(buttonAreaRight, paint);
         canvas.drawRect(buttonAreaDown, paint);

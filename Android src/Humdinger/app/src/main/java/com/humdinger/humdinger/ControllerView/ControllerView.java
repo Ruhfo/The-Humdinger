@@ -1,4 +1,4 @@
-package com.humdinger.humdinger;
+package com.humdinger.humdinger.ControllerView;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
@@ -11,6 +11,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+
+import com.humdinger.humdinger.R;
 
 import java.util.ArrayList;
 
@@ -86,7 +88,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
             for (Button currentButton : buttons) {
                 currentButton.update();
                 canvas.drawBitmap(currentButton.currentlyDisplayed, currentButton.x, currentButton.y, null);
-                currentButton.drawRectagle(canvas, paint);
+                currentButton.drawRectangle(canvas, paint);
             }
             //Unlock it and do the actual drawing
             holder.unlockCanvasAndPost(canvas);

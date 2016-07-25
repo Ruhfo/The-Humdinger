@@ -17,7 +17,7 @@
             android:text="@string/menu_play"
             android:layout_weight="1"
             android:layout_margin="15dp"
-            android:onClick="toGameActivity"/>
+            android:onClick="toGameActivity" />
         <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -28,10 +28,10 @@
         <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="@string/menu_settings"
             android:layout_weight="1"
             android:layout_margin="15dp"
-            android:onClick="toSettingsActivity"/>
+            android:onClick="toSettingsActivity"
+            android:text="@string/menu_settings" />
     </LinearLayout>
 
     <LinearLayout
