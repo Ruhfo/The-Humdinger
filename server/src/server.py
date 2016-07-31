@@ -9,14 +9,14 @@ import tkinter as tk
 
 #windows keypress
 from platform import system
-try:
+if system() == "Windows":
     import win32api
     import win32con
-finally:
+else:
     pass #Do nothing if not windows machine
 
 #Define constants
-HOST = str(socket.gethostbyname(socket.gethostname())) #For local testing use '127.0.0.1'
+HOST = "127.0.0.1"#str(socket.gethostbyname(socket.gethostname())) #For local testing use '127.0.0.1'
 PORT = 12345
 
 #Define color constants
@@ -26,29 +26,44 @@ COLOR_BAD = "#AA3333"
 #Find out current os
 OS = system()
 
-#TODO: remove global usage of variable app (instance of GUIapplication)
+#TODO: refactor global usage of variable app (instance of GUIapplication)
 #TODO: check for win32api amd win32con before sendkey
 
 def send_key(keycode, pressed):
     if OS == 'Windows':
+        send_key_windows(keycode, pressed)
+    else:
+        send_key_linux(keycode, pressed)
+def send_key_linux(keycode, pressed):
+    #Linuxi kood tuleb siia
+    pass
+
+def send_key_windows(keycode, pressed):
         if pressed:
             win32api.keybd_event(keycode, 0, win32con.KEYEVENTF_EXTENDEDKEY, 0)
         else:
             win32api.keybd_event(keycode, 0, win32con.KEYEVENTF_KEYUP, 0)
-    else:
-        app.debugg_write("can't send keys on {}".format(OS))
+ 
 
 class TCPHandler(socketserver.BaseRequestHandler):
     """This class handles TCP requests and receives keypresses"""
     def handle(self):
         #Data is send as c_byte value
-        self.alive = bool(ord(self.request.recv(1)))
-        if self.alive == True:
-            self.data = ord(self.request.recv(1))
-            app.debugg_write("{} sent: {}".format(self.client_address[0], str(self.data)))
-            send_key(self.data, True)
+        while True:
+            self.data = self.request.recv(16)
+
+            if not self.data: #No data from client
+                break
+                app.debugg_write("No data received from: ", self.client_address[0])
+
+            socket = self.request
+            if self.data != 0:
+                self.data = self.data.decode()
+                app.debugg_write("{} sent: {}".format(self.client_address[0], str(self.data)))
+                send_key(self.data, True)
+            socket.sendto(ctypes.c_bool(True), self.client_address)
             
-        self.request.sendall(ctypes.c_bool(True)) #Send Keepalive ping
+#        self.request.sendall(ctypes.c_bool(True)) #Send Keepalive ping
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     """Overwrite default tcp server's methods with thread friendly variants"""
     pass
