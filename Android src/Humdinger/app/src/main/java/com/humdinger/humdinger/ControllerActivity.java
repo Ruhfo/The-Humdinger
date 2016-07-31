@@ -19,7 +19,6 @@ public class ControllerActivity extends AppCompatActivity {
         setContentView(drawingView);
     }
 
-
     //When app goes into background
     @Override
     protected void onPause() {

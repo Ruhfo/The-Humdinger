@@ -46,12 +46,12 @@ public class MenuActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //If everything goes OK with reading the QR data
         if (resultCode == RESULT_OK) {
-            ipAddress = data.getStringExtra("SCAN_RESULT"); // This will contain scan result
+            ipAddress = data.getStringExtra("SCAN_RESULT"); // This will contain the scan result
             startActivity(new Intent(this, ControllerActivity.class));
         }
     }
 
-    private void popUpDialog(){
+    private void popUpDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Input server ip");
         // Set up the input

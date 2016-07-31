@@ -2,8 +2,6 @@ package com.humdinger.humdinger.ControllerView;
 
 import android.graphics.Bitmap;
 
-import com.humdinger.humdinger.ControllerView.Button;
-
 public class TapButton extends Button {
 
     public TapButton(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char message) {

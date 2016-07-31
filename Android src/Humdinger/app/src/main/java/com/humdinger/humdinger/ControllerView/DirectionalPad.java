@@ -5,8 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-import com.humdinger.humdinger.ControllerView.Button;
-
 public class DirectionalPad extends Button {
 
     Rect buttonAreaUp, buttonAreaRight, buttonAreaDown, buttonAreaLeft;
