@@ -1,8 +1,10 @@
 package com.humdinger.humdinger;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -28,6 +30,9 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void toGameActivity(View view) {
+
+        startActivity(new Intent(this, ControllerActivity.class));
+/*
         Intent intent = new Intent("com.google.zxing.client.android.SCAN");
         intent.setPackage("com.google.zxing.client.android");
         intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
@@ -38,7 +43,7 @@ public class MenuActivity extends AppCompatActivity {
         //If not then ask the user to input the ip manually
         else {
             popUpDialog();
-        }
+        }*/
 
     }
 

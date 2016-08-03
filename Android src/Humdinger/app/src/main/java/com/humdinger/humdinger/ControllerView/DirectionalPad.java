@@ -1,5 +1,7 @@
+/*
 package com.humdinger.humdinger.ControllerView;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -11,8 +13,8 @@ public class DirectionalPad extends Button {
     char messageUp, messageRight, messageDown, messageLeft;
     private int rectangleNr = 5;
 
-    public DirectionalPad(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char messageUp, char messageRight, char messageDown, char messageLeft) {
-        super(x, y, normalBitmap, pressedBitmap, 'm');
+    public DirectionalPad(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char messageUp, char messageRight, char messageDown, char messageLeft, int color) {
+        super(x, y, normalBitmap, pressedBitmap, 'm', color);
         this.messageUp = messageUp;
         this.messageRight = messageRight;
         this.messageDown = messageDown;
@@ -37,6 +39,11 @@ public class DirectionalPad extends Button {
         canvas.drawRect(buttonAreaRight, paint);
         canvas.drawRect(buttonAreaDown, paint);
         canvas.drawRect(buttonAreaLeft, paint);
+    }
+
+    @Override
+    void drawButton(Canvas c) {
+
     }
 
     @Override
@@ -80,3 +87,4 @@ public class DirectionalPad extends Button {
         } else this.currentlyDisplayed = this.normalBitmap;
     }
 }
+*/

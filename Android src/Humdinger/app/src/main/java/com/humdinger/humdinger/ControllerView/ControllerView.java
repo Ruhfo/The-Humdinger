@@ -1,18 +1,17 @@
 package com.humdinger.humdinger.ControllerView;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Vibrator;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.humdinger.humdinger.R;
 
 import java.util.ArrayList;
 
@@ -23,11 +22,15 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
     private boolean isItOK = false;
     private ArrayList<Button> buttons = new ArrayList<>();
     Paint paint = new Paint();
+    private Vibrator vibrator;
+    boolean vibrationState = true;
+    int vibrationLength = 100;
 
     public ControllerView(Context context) {
         super(context);
         this.holder = getHolder();
         this.setOnTouchListener(this);
+        this.vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 
         paint.setColor(Color.WHITE);
         paint.setStyle(Paint.Style.STROKE);
@@ -39,28 +42,27 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         windowManager.getDefaultDisplay().getSize(screenSize);
         int x = screenSize.x;
         int y = screenSize.y;
-        //
 
         //Add button A
-        buttons.add(new TapButton(0.85f * x, 0.45f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_a), BitmapFactory.decodeResource(getResources(), R.drawable.button_a_pressed), 'A'));
+        buttons.add(new CircleButton(0.85f * x, 0.45f * y, 100f,'A',Color.GREEN,"A"));
         //Add button B
-        buttons.add(new TapButton(0.775f * x, 0.65f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_b), BitmapFactory.decodeResource(getResources(), R.drawable.button_b_pressed), 'B'));
+        buttons.add(new CircleButton(0.775f * x, 0.65f * y,100f,'B',Color.RED,"B"));
         //Add button X
-        buttons.add(new TapButton(0.775f * x, 0.25f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_x), BitmapFactory.decodeResource(getResources(), R.drawable.button_x_pressed), 'X'));
+        buttons.add(new CircleButton(0.775f * x, 0.25f * y,100f, 'X',Color.BLUE,"X"));
         //Add button Y
-        buttons.add(new TapButton(0.7f * x, 0.45f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_y), BitmapFactory.decodeResource(getResources(), R.drawable.button_y_pressed), 'Y'));
+        buttons.add(new CircleButton(0.7f * x, 0.45f * y,100f, 'Y',Color.YELLOW,"Y"));
 
         //Add start button
-        buttons.add(new TapButton(0.5f * x, 0.4f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_start), BitmapFactory.decodeResource(getResources(), R.drawable.button_start_pressed), 't'));
+        buttons.add(new RectButton(0.5f * x, 0.4f * y,100f,200f,'t',Color.CYAN,"Start"));
         //Add select button
-        buttons.add(new TapButton(0.4f * x, 0.4f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_select), BitmapFactory.decodeResource(getResources(), R.drawable.button_select_pressed), 'y'));
+        buttons.add(new RectButton(0.4f * x, 0.4f * y,100f, 200f, 'y',Color.CYAN,"Select"));
 
         //Add the Directional pad
-        buttons.add(new DirectionalPad(0f * x, 0.35f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad), BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad_pressed), 'w', 'd', 's', 'a'));
+        //buttons.add(new DirectionalPad(0f * x, 0.35f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad), BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad_pressed), 'w', 'd', 's', 'a'));
         //Add the left button
-        buttons.add(new TapButton(0f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_lb), BitmapFactory.decodeResource(getResources(), R.drawable.button_lb_pressed), 'q'));
+        //buttons.add(new CircleButton(0f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_lb), BitmapFactory.decodeResource(getResources(), R.drawable.button_lb_pressed), 'q'));
         //Add the right button
-        buttons.add(new TapButton(0.75f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_rb), BitmapFactory.decodeResource(getResources(), R.drawable.button_rb_pressed), 'e'));
+        //buttons.add(new CircleButton(0.75f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_rb), BitmapFactory.decodeResource(getResources(), R.drawable.button_rb_pressed), 'e'));
     }
 
 
@@ -87,8 +89,9 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
             canvas.drawColor(Color.BLACK);
             for (Button currentButton : buttons) {
                 currentButton.update();
-                canvas.drawBitmap(currentButton.currentlyDisplayed, currentButton.x, currentButton.y, null);
+                currentButton.drawButton(canvas);
                 currentButton.drawRectangle(canvas, paint);
+
             }
             //Unlock it and do the actual drawing
             holder.unlockCanvasAndPost(canvas);
@@ -129,6 +132,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
                 selectedButton = button;
                 continue;
             }
+            //If the fingers slides off the button
             button.buttonPressed = false;
         }
 
@@ -139,12 +143,17 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
             case MotionEvent.ACTION_POINTER_DOWN: {
                 if (selectedButton != null) {
                     selectedButton.buttonPressed = true;
+                    if(this.vibrationState){
+                        vibrator.vibrate(vibrationLength);
+                    }
+
                 }
                 break;
             }
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP: {
                 if (selectedButton != null) {
+                    //If the finger is taken off without being slid off the button
                     selectedButton.buttonPressed = false;
                 }
                 break;

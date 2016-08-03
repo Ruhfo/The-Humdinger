@@ -4,6 +4,8 @@
 
     <!-- This permission is necessary in order for Humdinger to access the network. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- This permission is necessary in order for Humdinger to be able to vibrate the device. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
