@@ -1,90 +1,36 @@
-/*
 package com.humdinger.humdinger.ControllerView;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
+import java.util.ArrayList;
 
-public class DirectionalPad extends Button {
+public class DirectionalPad{
 
-    Rect buttonAreaUp, buttonAreaRight, buttonAreaDown, buttonAreaLeft;
+    float x,y,sideLength;
     char messageUp, messageRight, messageDown, messageLeft;
-    private int rectangleNr = 5;
+    int normalColor;
+    ArrayList<Button> DPadButtons;
 
-    public DirectionalPad(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char messageUp, char messageRight, char messageDown, char messageLeft, int color) {
-        super(x, y, normalBitmap, pressedBitmap, 'm', color);
+    public DirectionalPad(float x, float y, float sideLength, char messageUp, char messageRight, char messageDown, char messageLeft, int color, ArrayList<Button> buttons){
+        this.x = x;
+        this.y = y;
+        this.sideLength = sideLength;
         this.messageUp = messageUp;
         this.messageRight = messageRight;
         this.messageDown = messageDown;
         this.messageLeft = messageLeft;
+        this.normalColor = color;
+
+        this.DPadButtons = buttons;
+        setRectangleOnButton();
     }
 
-    @Override
-    //Rectangle is specified Left, Top, Right, Bottom
-    public void setRectangleOnButton(float x, float y) {
-        super.setRectangleOnButton(x, y);
-        int xx = Math.round(x);
-        int yy = Math.round(y);
-        this.buttonAreaUp = new Rect(xx + this.currentlyDisplayed.getWidth() / 3, yy, xx + Math.round(this.currentlyDisplayed.getWidth() * 0.68f), yy + Math.round(this.currentlyDisplayed.getHeight() * 0.35f));
-        this.buttonAreaRight = new Rect(xx + Math.round(this.currentlyDisplayed.getWidth() * 0.68f), yy + Math.round(this.currentlyDisplayed.getHeight() * 0.35f), xx + this.currentlyDisplayed.getWidth(), yy + Math.round(this.currentlyDisplayed.getHeight() * 0.68f));
-        this.buttonAreaDown = new Rect(xx + this.currentlyDisplayed.getWidth() / 3, yy + Math.round(this.currentlyDisplayed.getHeight() * 0.68f), xx + Math.round(this.currentlyDisplayed.getWidth() * 0.68f), yy + this.currentlyDisplayed.getHeight());
-        this.buttonAreaLeft = new Rect(xx, yy + Math.round(this.currentlyDisplayed.getHeight() * 0.35f), xx + this.currentlyDisplayed.getWidth() / 3, yy + Math.round(this.currentlyDisplayed.getHeight() * 0.68f));
-    }
-
-    @Override
-    public void drawRectangle(Canvas canvas, Paint paint) {
-        canvas.drawRect(buttonAreaUp, paint);
-        canvas.drawRect(buttonAreaRight, paint);
-        canvas.drawRect(buttonAreaDown, paint);
-        canvas.drawRect(buttonAreaLeft, paint);
-    }
-
-    @Override
-    void drawButton(Canvas c) {
-
-    }
-
-    @Override
-    public boolean isItTouched(float x, float y) {
-        if (buttonAreaUp.contains((int) x, (int) y)) {
-            this.rectangleNr = 8;
-            return true;
-        } else if (buttonAreaRight.contains((int) x, (int) y)) {
-            this.rectangleNr = 6;
-            return true;
-        } else if (buttonAreaDown.contains((int) x, (int) y)) {
-            this.rectangleNr = 2;
-            return true;
-        } else if (buttonAreaLeft.contains((int) x, (int) y)) {
-            this.rectangleNr = 4;
-            return true;
-        } else {
-            this.rectangleNr = 5;
-            return false;
-        }
-    }
-
-    @Override
-    public void update() {
-        if (this.buttonPressed) {
-            this.currentlyDisplayed = this.pressedBitmap;
-            switch (rectangleNr) {
-                case 8:
-                    sendMessage(this.messageUp);
-                    break;
-                case 6:
-                    sendMessage(this.messageRight);
-                    break;
-                case 2:
-                    sendMessage(this.messageDown);
-                    break;
-                case 4:
-                    sendMessage(this.messageLeft);
-                    break;
-            }
-        } else this.currentlyDisplayed = this.normalBitmap;
+    void setRectangleOnButton() {
+        //Up
+        DPadButtons.add(new RectButton(x+sideLength/3,y,sideLength/3, sideLength/3,this.messageUp, normalColor,"W"));
+        //Right
+        DPadButtons.add(new RectButton(x+(sideLength/3)*2,y+sideLength/3,sideLength/3, sideLength/3,this.messageRight, normalColor,"D"));
+        //Down
+        DPadButtons.add(new RectButton(x+sideLength/3,y+(sideLength/3)*2,sideLength/3, sideLength/3,this.messageDown, normalColor,"S"));
+        //Left
+        DPadButtons.add(new RectButton(x,y+sideLength/3,sideLength/3, sideLength/3,this.messageLeft, normalColor,"A"));
     }
 }
-*/

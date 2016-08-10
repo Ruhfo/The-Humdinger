@@ -4,19 +4,17 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 
 public class RectButton extends Button {
-    float x,y,width,height;
+    float x, y, width, height;
     char message;
     int normalColor, pressedColor;
+    boolean orientation;
     String buttonText;
     Paint buttonPaint, textPaint;
     Rect buttonArea;
 
-    //2x radius is length of button, radius is the width
     public RectButton(float x, float y, float width, float height, char message, int color, String buttonText) {
-        super();
         this.x = x;
         this.y = y;
         this.width = width;
@@ -31,16 +29,12 @@ public class RectButton extends Button {
 
         this.textPaint = new Paint();
         textPaint.setColor(Color.WHITE);
-        int textSize = 1;
-        this.textPaint.setTextSize(textSize);
 
-        //Todo: Redo the code below to make it better
-        //To make sure the text will be inside the button
-        while(textPaint.measureText(buttonText) < height-20){
-            textSize += 1;
-            textPaint.setTextSize(textSize);
-        }
         setRectangleOnButton();
+        if(!buttonText.isEmpty()){
+            setTextSize();
+        }
+
     }
 
     @Override
@@ -48,12 +42,14 @@ public class RectButton extends Button {
         if (buttonPressed) {
             this.buttonPaint.setColor(pressedColor);
             this.sendMessage(this.message);
-        } else this.buttonPaint.setColor(normalColor);
+        } else {
+            this.buttonPaint.setColor(normalColor);
+        }
     }
 
     @Override
     void setRectangleOnButton() {
-        this.buttonArea = new Rect(Math.round(x),Math.round(y),Math.round(x+width),Math.round(y+height));
+        this.buttonArea = new Rect(Math.round(x), Math.round(y), Math.round(x + width), Math.round(y + height));
     }
 
     @Override
@@ -61,13 +57,19 @@ public class RectButton extends Button {
         return buttonArea.contains((int) x, (int) y);
     }
 
+    //ToDo: Make the below more generic - do something with the rotation code
     @Override
     void drawButton(Canvas canvas) {
-        canvas.drawRect(x,y,x+width,y+height,buttonPaint);
-        canvas.save();
-        canvas.rotate(-90,x+width,y+height);
-        canvas.drawText(buttonText,x+width*1.15f,y+height*0.9f,textPaint);
-        canvas.restore();
+        canvas.drawRect(x, y, x + width, y + height, buttonPaint);
+        //To make sure the text will be inside the button
+        //Vertical button
+        if (orientation){
+            canvas.save();
+            canvas.rotate(-90,x+width,y+height);
+            canvas.drawText(buttonText,x+width*1.15f,y+height*0.9f,textPaint);
+            canvas.restore();
+        }//Landscape button
+        else canvas.drawText(buttonText,x,y+height,textPaint);
     }
 
     @Override
@@ -75,9 +77,26 @@ public class RectButton extends Button {
         canvas.drawRect(this.buttonArea, paint);
     }
 
-    @Override
-    public String toString() {
-        Log.v("But",buttonText);
-        return  buttonText;
+    void setTextSize(){
+        int textSize = 1;
+        float sideToCompareWith;
+        this.textPaint.setTextSize(textSize);
+        //Check the dimensions of the button
+        //False = landscape; True = vertical
+        this.orientation = this.width < this.height;
+
+        if(orientation) {
+            sideToCompareWith = this.height;
+        }
+        else {
+            sideToCompareWith = this.width;
+        }
+
+        while(textPaint.measureText(buttonText) < sideToCompareWith-20){
+            textSize += 1;
+            textPaint.setTextSize(textSize);
+        }
+
     }
 }
+

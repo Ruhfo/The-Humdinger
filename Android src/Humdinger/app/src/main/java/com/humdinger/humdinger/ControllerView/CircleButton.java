@@ -20,7 +20,7 @@ public class CircleButton extends Button {
         this.radius = radius;
         this.message = message;
         this.normalColor = color;
-        this.pressedColor = Color.WHITE;
+        this.pressedColor = Color.LTGRAY;
         this.buttonText = buttonText;
 
         this.buttonPaint = new Paint();

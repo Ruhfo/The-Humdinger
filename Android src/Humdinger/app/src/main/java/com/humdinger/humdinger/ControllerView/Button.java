@@ -18,7 +18,7 @@ public abstract class Button {
     abstract void update();
 
     public void sendMessage(char message) {
-        Log.v(getClass().getSimpleName(), "I am sending " + message);
+        //Log.v(getClass().getSimpleName(), "I am sending " + message);
     }
 }
 
