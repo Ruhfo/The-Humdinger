@@ -8,11 +8,11 @@ import android.graphics.Rect;
 public class DirectionalPad extends Button {
 
     Rect buttonAreaUp, buttonAreaRight, buttonAreaDown, buttonAreaLeft;
-    char messageUp, messageRight, messageDown, messageLeft;
+    String messageUp, messageRight, messageDown, messageLeft;
     private int rectangleNr = 5;
 
-    public DirectionalPad(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char messageUp, char messageRight, char messageDown, char messageLeft) {
-        super(x, y, normalBitmap, pressedBitmap, 'm');
+    public DirectionalPad(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, String messageUp, String messageRight, String messageDown, String messageLeft) {
+        super(x, y, normalBitmap, pressedBitmap, "m");
         this.messageUp = messageUp;
         this.messageRight = messageRight;
         this.messageDown = messageDown;

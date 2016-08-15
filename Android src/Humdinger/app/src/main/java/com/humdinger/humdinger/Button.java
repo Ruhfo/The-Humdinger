@@ -6,14 +6,18 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
+import com.humdinger.networker.Key;
+
+import static com.humdinger.humdinger.ControllerView.gamePad;
+
 public class Button {
     float x, y;
     Bitmap normalBitmap, pressedBitmap, currentlyDisplayed;
     private Rect buttonArea;
     boolean buttonPressed = false;
-    private char message;
+    private String message;
 
-    public Button(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char message) {
+    public Button(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, String message) {
         this.x = x;
         this.y = y;
         this.normalBitmap = normalBitmap;
@@ -44,8 +48,9 @@ public class Button {
         } else this.currentlyDisplayed = this.normalBitmap;
     }
 
-    public void sendMessage(char message) {
+    public void sendMessage(String message) {
         Log.v("Message", "I am sending " + message);
+        gamePad.setKey(message);
     }
 }
 
