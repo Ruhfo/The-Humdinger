@@ -88,6 +88,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         SocketClient sockClient = new SocketClient("192.168.0.111", 21000, gamePad);
         //pass IP and port to client socket
         new Thread(sockClient).start(); // Start new client socket
+        Log.v("Message", "I'm a fag");
     }
 
 
