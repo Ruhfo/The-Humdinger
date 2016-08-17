@@ -1,5 +1,6 @@
 package com.humdinger.networker;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ public class KeyList {
 
     //Two separate lists for keys and their states pressed(1) not pressed(0)
     private HashMap<String, Key> keyMap;
+    private ArrayList<Key> keys;
 
     public KeyList(HashMap<String, Key> keyMap){
         this.keyMap = keyMap;
@@ -19,7 +21,9 @@ public class KeyList {
 
     public Key[] getKeys(){
         synchronized (this) {
-            return (Key[]) keyMap.values().toArray();
+            Collection<Key> col = keyMap.values();
+            col.toArray(new Key[col.size()]);
+            return col.toArray(new Key[col.size()]);
         }
     }
 

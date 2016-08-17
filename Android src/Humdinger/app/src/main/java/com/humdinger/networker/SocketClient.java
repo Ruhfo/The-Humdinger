@@ -7,6 +7,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.channels.UnresolvedAddressException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Created by andres on 26.07.16.
@@ -14,9 +17,9 @@ import java.nio.channels.UnresolvedAddressException;
 public class SocketClient implements Runnable{
     private final String IP;
     private final int PORT;
-    private final KeyList keys;
+    private final ArrayBlockingQueue<Key> keys;
 
-    public SocketClient(final String IP, final int PORT, final KeyList keys){
+    public SocketClient(final String IP, final int PORT, final ArrayBlockingQueue<Key> keys){
         //For passing variables to run method
         this.IP = IP;
         this.PORT = PORT;
@@ -24,12 +27,11 @@ public class SocketClient implements Runnable{
     }
 
     @Override public void run(){
-        Log.v("Message", "IP: "+IP+" PORT: "+PORT);
+
         try{
-            Log.v("Message", "IP: "+IP+" PORT: "+PORT);
             Socket client = new Socket(IP, PORT);
 
-            Log.v("Message", "Successfully initiated socket");
+            Log.v("Message", "Connection on IP: "+IP+" PORT: "+PORT);
             OutputStream outToServer = client.getOutputStream();
             DataOutputStream out = new DataOutputStream(outToServer);
 
@@ -40,30 +42,33 @@ public class SocketClient implements Runnable{
                 // loop for sending keypresses
 
                 //send all active keys
-                Key[] currentKeys =keys.getKeys();
+                ArrayList<Key> currentKeys  = new ArrayList<Key>(keys.size());
+                keys.drainTo(currentKeys);
                 for (Key k:currentKeys) {
                     if (k.state != 0){
                         out.writeByte(k.key);
                         out.writeByte(k.state);
+
+                        //get reply
+                        boolean msg  = in.readBoolean();
+                        if (msg == true){
+                        }else{
+                            break;
+                        }
                     }
+                    Log.v("Message", "Successfully sent keypresses");
                 }
-                Log.v("Message", "Successfully sent keypresses");
-                boolean msg  = in.readBoolean();
-                if (msg == true){
-                    Log.v("Message", "Recieved confirmation from server");
-                }else{
-                    break;
-                }
+
+
 
                 //Pause sending thread for some time
                 try{
                     Thread.sleep(30); //
                 } catch (InterruptedException e){
-                    Log.getStackTraceString(e);
+                    Log.v("Message", "Couldn't put networking thread to sleep");
                 }
 
             }
-        client.close();
 
         } catch (IOException e){
             Log.v("Message", "Couldn't initiate connection IOException");

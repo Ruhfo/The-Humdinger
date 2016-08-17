@@ -15,9 +15,9 @@ public class Button {
     Bitmap normalBitmap, pressedBitmap, currentlyDisplayed;
     private Rect buttonArea;
     boolean buttonPressed = false;
-    private String message;
+    private char message;
 
-    public Button(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, String message) {
+    public Button(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char message) {
         this.x = x;
         this.y = y;
         this.normalBitmap = normalBitmap;
@@ -48,9 +48,13 @@ public class Button {
         } else this.currentlyDisplayed = this.normalBitmap;
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(char message) {
         Log.v("Message", "I am sending " + message);
-        gamePad.setKey(message);
+        try {
+            gamePad.put(new Key(message,'0'));
+        } catch (InterruptedException e) {
+            Log.v("Message", "Interupted gamePad put");
+        }
     }
 }
 

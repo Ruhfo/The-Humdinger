@@ -19,10 +19,12 @@ import com.humdinger.networker.SocketClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class ControllerView extends SurfaceView implements Runnable, View.OnTouchListener {
 
-    public static KeyList gamePad;
+    public static ArrayBlockingQueue<Key> gamePad;
 
     private Thread t = null;
     private SurfaceHolder holder;
@@ -47,48 +49,33 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         int y = screenSize.y;
         //
 
-        //Create and populate new keymap
-        HashMap<String, Key> keys = new HashMap<>();
 
         //Add button A
-        buttons.add(new TapButton(0.85f * x, 0.45f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_a), BitmapFactory.decodeResource(getResources(), R.drawable.button_a_pressed), "A"));
-        keys.put("A", new Key('a', (char) 0));
+        buttons.add(new TapButton(0.85f * x, 0.45f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_a), BitmapFactory.decodeResource(getResources(), R.drawable.button_a_pressed), 'A'));
         //Add button B
-        buttons.add(new TapButton(0.775f * x, 0.65f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_b), BitmapFactory.decodeResource(getResources(), R.drawable.button_b_pressed), "B"));
-        keys.put("B", new Key('b', (char) 0));
+        buttons.add(new TapButton(0.775f * x, 0.65f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_b), BitmapFactory.decodeResource(getResources(), R.drawable.button_b_pressed), 'B'));
         //Add button X
-        buttons.add(new TapButton(0.775f * x, 0.25f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_x), BitmapFactory.decodeResource(getResources(), R.drawable.button_x_pressed), "X"));
-        keys.put("X", new Key('x', (char) 0));
+        buttons.add(new TapButton(0.775f * x, 0.25f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_x), BitmapFactory.decodeResource(getResources(), R.drawable.button_x_pressed), 'X'));
         //Add button Y
-        buttons.add(new TapButton(0.7f * x, 0.45f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_y), BitmapFactory.decodeResource(getResources(), R.drawable.button_y_pressed), "Y"));
-        keys.put("Y", new Key('y', (char) 0));
+        buttons.add(new TapButton(0.7f * x, 0.45f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_y), BitmapFactory.decodeResource(getResources(), R.drawable.button_y_pressed), 'Y'));
 
         //Add start button
-        buttons.add(new TapButton(0.5f * x, 0.4f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_start), BitmapFactory.decodeResource(getResources(), R.drawable.button_start_pressed), "start"));
-        keys.put("start", new Key('s', (char) 0));
+        buttons.add(new TapButton(0.5f * x, 0.4f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_start), BitmapFactory.decodeResource(getResources(), R.drawable.button_start_pressed), 's'));
         //Add select button
-        buttons.add(new TapButton(0.4f * x, 0.4f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_select), BitmapFactory.decodeResource(getResources(), R.drawable.button_select_pressed), "select"));
-        keys.put("select", new Key('c', (char) 0));
+        buttons.add(new TapButton(0.4f * x, 0.4f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_select), BitmapFactory.decodeResource(getResources(), R.drawable.button_select_pressed), 'c'));
         //Add the Directional pad
-        buttons.add(new DirectionalPad(0f * x, 0.35f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad), BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad_pressed), "up", "right", "down", "left"));
-        keys.put("left", new Key('1', (char) 0));
-        keys.put("up", new Key('2', (char) 0));
-        keys.put("right", new Key('3', (char) 0));
-        keys.put("bottom", new Key('4', (char) 0));
+        buttons.add(new DirectionalPad(0f * x, 0.35f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad), BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad_pressed), '1', '2', '3', '4'));
 
         //Add the left button
-        buttons.add(new TapButton(0f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_lb), BitmapFactory.decodeResource(getResources(), R.drawable.button_lb_pressed), "lb"));
-        keys.put("lb", new Key('l', (char) 0));
+        buttons.add(new TapButton(0f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_lb), BitmapFactory.decodeResource(getResources(), R.drawable.button_lb_pressed), 'l'));
         //Add the right button
-        buttons.add(new TapButton(0.75f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_rb), BitmapFactory.decodeResource(getResources(), R.drawable.button_rb_pressed), "rb"));
-        keys.put("rb", new Key('r', (char) 0));
+        buttons.add(new TapButton(0.75f * x, 0f * y, BitmapFactory.decodeResource(getResources(), R.drawable.button_rb), BitmapFactory.decodeResource(getResources(), R.drawable.button_rb_pressed), 'r'));
 
         //Create new socketclient and start networking thread
-        gamePad = new KeyList(keys);
+        gamePad = new ArrayBlockingQueue<Key>(buttons.size());
         SocketClient sockClient = new SocketClient("192.168.0.111", 21000, gamePad);
         //pass IP and port to client socket
         new Thread(sockClient).start(); // Start new client socket
-        Log.v("Message", "I'm a fag");
     }
 
 
