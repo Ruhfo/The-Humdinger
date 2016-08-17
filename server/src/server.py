@@ -16,8 +16,8 @@ else:
     pass #Do nothing if not windows machine
 
 #Define constants
-HOST = "127.0.0.1"#str(socket.gethostbyname(socket.gethostname())) #For local testing use '127.0.0.1'
-PORT = 12345
+HOST = "192.168.0.111"#str(socket.gethostbyname(socket.gethostname())) #For local testing use '127.0.0.1'
+PORT = 21000 
 
 #Define color constants
 COLOR_OK = "#33AA33"
@@ -49,21 +49,21 @@ class TCPHandler(socketserver.BaseRequestHandler):
     """This class handles TCP requests and receives keypresses"""
     def handle(self):
         #Data is send as c_byte value
+        app.debugg_write("New conncection from " + str(self.client_address[0]))
         while True:
-            self.data = self.request.recv(16)
-
+            self.data = self.request.recv(2)
             if not self.data: #No data from client
                 break
                 app.debugg_write("No data received from: ", self.client_address[0])
 
             socket = self.request
             if self.data != 0:
-                self.data = self.data.decode()
-                app.debugg_write("{} sent: {}".format(self.client_address[0], str(self.data)))
+                raw_key = self.data
+
+                app.debugg_write("{} sent: {}".format(self.client_address[0], str(raw_key)))
                 send_key(self.data, True)
             socket.sendto(ctypes.c_bool(True), self.client_address)
             
-#        self.request.sendall(ctypes.c_bool(True)) #Send Keepalive ping
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     """Overwrite default tcp server's methods with thread friendly variants"""
     pass
