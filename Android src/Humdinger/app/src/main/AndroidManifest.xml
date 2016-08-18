@@ -7,6 +7,8 @@
     <!-- This permission is necessary in order for Humdinger to be able to vibrate the device. -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

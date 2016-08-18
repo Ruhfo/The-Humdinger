@@ -4,9 +4,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
 
+import com.humdinger.humdinger.Networker.Key;
+import static com.humdinger.humdinger.ControllerView.ControllerView.gamePad;
+
 public abstract class Button {
     boolean buttonPressed = false;
     private final String LOG_TAG = Button.class.getSimpleName();
+
 
     public Button(){
     }
@@ -18,7 +22,12 @@ public abstract class Button {
     abstract void update();
 
     public void sendMessage(char message) {
-        //Log.v(getClass().getSimpleName(), "I am sending " + message);
+        Log.v(getClass().getSimpleName(), "I am sending " + message);
+        try {
+            gamePad.put(new Key(message,'0'));
+        } catch (InterruptedException e) {
+            Log.e("Message", "Interrupted gamePad put");
+       }
     }
 }
 

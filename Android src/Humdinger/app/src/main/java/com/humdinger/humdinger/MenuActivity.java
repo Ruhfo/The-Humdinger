@@ -8,6 +8,7 @@ import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -31,9 +32,12 @@ public class MenuActivity extends AppCompatActivity {
 
     public void toGameActivity(View view) {
 
+        //Be sure to delete it if you use other methods to
+        //Access the ControllerActivity
         startActivity(new Intent(this, ControllerActivity.class));
-/*
-        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+
+
+/*        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
         intent.setPackage("com.google.zxing.client.android");
         intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
         // Verify that the intent will resolve to an activity
@@ -52,7 +56,10 @@ public class MenuActivity extends AppCompatActivity {
         //If everything goes OK with reading the QR data
         if (resultCode == RESULT_OK) {
             ipAddress = data.getStringExtra("SCAN_RESULT"); // This will contain the scan result
-            startActivity(new Intent(this, ControllerActivity.class));
+
+            Intent intent = new Intent(this,ControllerActivity.class);
+            intent.putExtra("key", ipAddress);
+            startActivity(intent);
         }
     }
 
@@ -71,7 +78,9 @@ public class MenuActivity extends AppCompatActivity {
                 ipAddress = input.getText().toString();
                 //Check if the user actually entered something
                 if (!ipAddress.isEmpty()) {
-                    startActivity(new Intent(getApplicationContext(), ControllerActivity.class));
+                    Intent intent = new Intent(MenuActivity.this,ControllerActivity.class);
+                    intent.putExtra("key", ipAddress);
+                    startActivity(intent);
                 } else dialog.cancel();
 
             }

@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Vibrator;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -15,21 +14,25 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.humdinger.humdinger.Networker.Key;
+import com.humdinger.humdinger.Networker.SocketClient;
 
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class ControllerView extends SurfaceView implements Runnable, View.OnTouchListener {
 
+    public static ArrayBlockingQueue<Key> gamePad;
+
+    private final String LOG_TAG = ControllerView.class.getSimpleName();
+    Paint paint = new Paint();
+    boolean vibrationState = false;
+    int vibrationLength = 100, backgroundColor = Color.BLACK;
     private Thread t = null;
     private SurfaceHolder holder;
     private boolean isItOK = false;
-
     private ArrayList<Button> buttons = new ArrayList<>();
-    Paint paint = new Paint();
     private Vibrator vibrator;
-    boolean vibrationState = false;
-    int vibrationLength = 100, backgroundColor = Color.BLACK;
-    private final String LOG_TAG = ControllerView.class.getSimpleName();
     private SparseArray<PointF> mActivePointers = new SparseArray<>();
 
     public ControllerView(Context context) {
@@ -50,25 +53,31 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         int y = screenSize.y;
 
         //Add button A
-        buttons.add(new CircleButton(0.85f * x, 0.5f * y, 100f,'A',Color.GREEN,"A"));
+        buttons.add(new CircleButton(0.85f * x, 0.5f * y, 100f, 'A', Color.GREEN, "A"));
         //Add button B
-        buttons.add(new CircleButton(0.775f * x, 0.7f * y,100f,'B',Color.RED,"B"));
+        buttons.add(new CircleButton(0.775f * x, 0.7f * y, 100f, 'B', Color.RED, "B"));
         //Add button X
-        buttons.add(new CircleButton(0.775f * x, 0.3f * y,100f, 'X',Color.BLUE,"X"));
+        buttons.add(new CircleButton(0.775f * x, 0.3f * y, 100f, 'X', Color.BLUE, "X"));
         //Add button Y
-        buttons.add(new CircleButton(0.7f * x, 0.5f * y,100f, 'Y',Color.YELLOW,"Y"));
+        buttons.add(new CircleButton(0.7f * x, 0.5f * y, 100f, 'Y', Color.YELLOW, "Y"));
 
         //Add start button
-        buttons.add(new RectButton(0.5f * x, 0.4f * y,100f,200f,'t',Color.CYAN,"Start"));
+        buttons.add(new RectButton(0.5f * x, 0.4f * y, 100f, 200f, 't', Color.CYAN, "Start"));
         //Add select button
-        buttons.add(new RectButton(0.4f * x, 0.4f * y,100f, 200f, 'y',Color.CYAN,"Select"));
+        buttons.add(new RectButton(0.4f * x, 0.4f * y, 100f, 200f, 'y', Color.CYAN, "Select"));
 
         //Add the Directional pad
-        new DirectionalPad(0.05f*x, 0.25f * y,510,'w', 'd', 's', 'a',Color.MAGENTA, buttons);
+        new DirectionalPad(0.05f * x, 0.25f * y, 510, 'w', 'd', 's', 'a', Color.MAGENTA, buttons);
         //Add the left button
-        buttons.add(new RectButton(0f * x, 0f * y, 450,200,'q',Color.GREEN,"Left"));
+        buttons.add(new RectButton(0f * x, 0f * y, 450, 200, 'q', Color.GREEN, "Left"));
         //Add the right button
-        buttons.add(new RectButton(0.75f * x, 0f * y,450,200,'e',Color.GREEN,"Right"));
+        buttons.add(new RectButton(0.75f * x, 0f * y, 450, 200, 'e', Color.GREEN, "Right"));
+
+        //Create new SocketClient and start networking thread
+        gamePad = new ArrayBlockingQueue<>(buttons.size());
+        SocketClient sockClient = new SocketClient("127.0.0.1", 21000, gamePad);
+        //pass IP and port to client socket
+        new Thread(sockClient).start(); // Start new client socket
     }
 
 
@@ -159,7 +168,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
 
                 if (selectedButton != null) {
                     selectedButton.buttonPressed = true;
-                    if(this.vibrationState){
+                    if (this.vibrationState) {
                         vibrator.vibrate(vibrationLength);
                     }
                 }
