@@ -17,13 +17,13 @@ public class Button {
     boolean buttonPressed = false;
     private char message;
 
-    public Button(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char message) {
+    public Button(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, int message) {
         this.x = x;
         this.y = y;
         this.normalBitmap = normalBitmap;
         this.pressedBitmap = pressedBitmap;
         this.currentlyDisplayed = normalBitmap;
-        this.message = message;
+        this.message = (char) message;
         setRectangleOnButton(x, y);
     }
 

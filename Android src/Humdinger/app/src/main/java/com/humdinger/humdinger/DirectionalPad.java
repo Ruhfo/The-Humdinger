@@ -11,12 +11,12 @@ public class DirectionalPad extends Button {
     char messageUp, messageRight, messageDown, messageLeft;
     private int rectangleNr = 5;
 
-    public DirectionalPad(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, char messageUp, char messageRight, char messageDown, char messageLeft) {
+    public DirectionalPad(float x, float y, Bitmap normalBitmap, Bitmap pressedBitmap, int messageUp, int messageRight, int messageDown, int messageLeft) {
         super(x, y, normalBitmap, pressedBitmap, 'm');
-        this.messageUp = messageUp;
-        this.messageRight = messageRight;
-        this.messageDown = messageDown;
-        this.messageLeft = messageLeft;
+        this.messageUp = (char) messageUp;
+        this.messageRight = (char) messageRight;
+        this.messageDown = (char) messageDown;
+        this.messageLeft = (char) messageLeft;
     }
 
     @Override

@@ -47,7 +47,7 @@ public class SocketClient implements Runnable{
                 for (Key k:currentKeys) {
                     if (k.state != 0){
                         out.writeByte(k.key);
-                        out.writeByte(k.state);
+                        //out.writeByte(k.state); We don't need to send satate @moment
 
                         //get reply
                         boolean msg  = in.readBoolean();
@@ -63,7 +63,7 @@ public class SocketClient implements Runnable{
 
                 //Pause sending thread for some time
                 try{
-                    Thread.sleep(30); //
+                    Thread.sleep(5); //
                 } catch (InterruptedException e){
                     Log.v("Message", "Couldn't put networking thread to sleep");
                 }
