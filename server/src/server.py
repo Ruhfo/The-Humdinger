@@ -10,14 +10,50 @@ import tkinter as tk
 #windows keypress
 from platform import system
 if system() == "Windows":
-    import win32api
-    import win32con
+    try:
+        import win32api
+        import win32con
+    except ImportError:
+        print("Couldn't import win32api, wind32con ")
+
 else:
-    pass #Do nothing if not windows machine
+    try:
+        from evdev import UInput, AbsInfo, ecodes as e 
+    except ImportError:
+        print("Couldn't import linux uinput")
 
 #Define constants
 HOST = "192.168.0.111"#str(socket.gethostbyname(socket.gethostname())) #For local testing use '127.0.0.1'
 PORT = 21000 
+
+
+"""
+Enumerate keys for easier networking
+
+Button      number  key
+
+
+DPAD_LEFT   1       A
+DPAD_UP     2       W
+DPAD_RIGHT  3       D
+DPAD_DOWN   4       S
+
+BUT_X       5       I
+BUT_A       6       O
+BUT_Y       7       J
+BUT_B       8       K
+
+BUT_LB      9       Q
+BUT_RB      10      E
+
+BUT_SELECT  11      N
+BUT_START   12      M
+"""
+
+#keycodes
+KEY_COUNT = 12
+KEYLIST_WINDOWS = [0x41, 0x57, 0x44, 0x53, 0x58,0x4F,0x59,0x42,0x51,0x45,0x4E,0x4D]
+KEYLIST_LINUX = [e.KEY_A, e.KEY_W, e.KEY_D, e.KEY_S, e.KEY_I, e.KEY_O, e.KEY_J, e.KEY_K, e.KEY_Q, e.KEY_E, e.KEY_N, e.KEY_M]
 
 #Define color constants
 COLOR_OK = "#33AA33"
@@ -29,16 +65,23 @@ OS = system()
 #TODO: refactor global usage of variable app (instance of GUIapplication)
 #TODO: check for win32api amd win32con before sendkey
 
-def send_key(keycode, pressed):
-    if OS == 'Windows':
-        send_key_windows(keycode, pressed)
+def send_key(keycode):
+    if keycode < KEY_COUNT:
+        if OS == 'Windows':
+            send_key_windows(KEYLIST_WINDOWS[keycode])
+        else:
+            send_key_linux(KEYLIST_LINUX[keycode])
     else:
-        send_key_linux(keycode, pressed)
-def send_key_linux(keycode, pressed):
+        app.debugg_write("Invalid keycode")
+def send_key_linux(keycode):
     #Linuxi kood tuleb siia
-    pass
+    ui = UInput()
+    ui.write(e.EV_KEY, keycode, 1)
+    ui.write(e.EV_KEY, keycode, 0)
+    ui.syn()
+    ui.close()
 
-def send_key_windows(keycode, pressed):
+def send_key_windows(keycode):
         if pressed:
             win32api.keybd_event(keycode, 0, win32con.KEYEVENTF_EXTENDEDKEY, 0)
         else:
@@ -51,17 +94,19 @@ class TCPHandler(socketserver.BaseRequestHandler):
         #Data is send as c_byte value
         app.debugg_write("New conncection from " + str(self.client_address[0]))
         while True:
-            self.data = self.request.recv(2)
+            self.data = self.request.recv(1)
+
             if not self.data: #No data from client
                 break
                 app.debugg_write("No data received from: ", self.client_address[0])
 
-            socket = self.request
-            if self.data != 0:
-                raw_key = self.data
+            app.debugg_write("{} sent: {}".format(self.client_address[0], str(self.data)))
+            try:
+                send_key(ord(self.data))
+            except ValueError:
+                app.debugg_write("wrong type of data: ", type(self.data))
 
-                app.debugg_write("{} sent: {}".format(self.client_address[0], str(raw_key)))
-                send_key(self.data, True)
+            socket = self.request
             socket.sendto(ctypes.c_bool(True), self.client_address)
             
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -142,7 +187,6 @@ class GUIapplication(tk.Frame):
         self.server.server_close()
         
         self.debugg_write("TCP/IP server has been successfully closed")
-       
 
 if __name__ == "__main__":
     app = GUIapplication()
