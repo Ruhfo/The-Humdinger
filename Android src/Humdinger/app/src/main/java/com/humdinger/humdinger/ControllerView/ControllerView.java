@@ -74,10 +74,10 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         buttons.add(new RectButton(0.75f * x, 0f * y, 450, 200, 'e', Color.GREEN, "Right"));
 
         //Create new SocketClient and start networking thread
-        gamePad = new ArrayBlockingQueue<>(buttons.size());
-        SocketClient sockClient = new SocketClient("127.0.0.1", 21000, gamePad);
+        //gamePad = new ArrayBlockingQueue<>(buttons.size());
+        //SocketClient sockClient = new SocketClient("192.168.1.142", 21000, gamePad);
         //pass IP and port to client socket
-        new Thread(sockClient).start(); // Start new client socket
+        //new Thread(sockClient).start(); // Start new client socket
     }
 
 

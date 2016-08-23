@@ -23,11 +23,11 @@ public abstract class Button {
 
     public void sendMessage(char message) {
         Log.v(getClass().getSimpleName(), "I am sending " + message);
-        try {
+/*        try {
             gamePad.put(new Key(message,'0'));
         } catch (InterruptedException e) {
             Log.e("Message", "Interrupted gamePad put");
-       }
+       }*/
     }
 }
 
