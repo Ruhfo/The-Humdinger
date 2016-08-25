@@ -6,4 +6,6 @@
     <string name="menu_profile_indicator">Current profile:</string>
     <string name="menu_current_profile">snes</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_edit">Edit</string>
+    <string name="title_delete">Delete</string>
 </resources>
