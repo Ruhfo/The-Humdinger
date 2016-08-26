@@ -1,8 +1,12 @@
 package com.humdinger.humdinger;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -10,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,6 +25,7 @@ public class ProfilesActivity extends AppCompatActivity {
     private static final String LOG_TAG = ProfilesActivity.class.getSimpleName();
     ArrayAdapter profilesAdapter;
     final ArrayList<String> profiles = new ArrayList<>();
+    private String newProfileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +47,7 @@ public class ProfilesActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ProfilesActivity.this, "This adds a new profile", Toast.LENGTH_SHORT).show();
+                popUpDialog();
             }
         });
 
@@ -102,5 +108,35 @@ public class ProfilesActivity extends AppCompatActivity {
 
     public void send(String option){
         Log.e(LOG_TAG,"Vajutasid "+option);
+    }
+
+    private void popUpDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter custom profile name");
+        // Set up the input
+        final EditText input = new EditText(this);
+        //input.setHint("Profile name");
+        // Specify the type of input expected - a string with numbers;
+        input.setInputType(InputType.TYPE_CLASS_TEXT );
+        builder.setView(input);
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                newProfileName = input.getText().toString();
+                //Check if the user actually entered something
+                if (!newProfileName.isEmpty()) {
+                    //Do something
+                } else dialog.cancel();
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 }

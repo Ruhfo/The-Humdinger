@@ -45,7 +45,7 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(3f);
 
-        //Get the size of the drawable field
+        //Get the size of the window screen
         Point screenSize = new Point();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getSize(screenSize);
