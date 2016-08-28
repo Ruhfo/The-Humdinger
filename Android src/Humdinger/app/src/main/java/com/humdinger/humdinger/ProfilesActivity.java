@@ -126,6 +126,8 @@ public class ProfilesActivity extends AppCompatActivity {
                 newProfileName = input.getText().toString();
                 //Check if the user actually entered something
                 if (!newProfileName.isEmpty()) {
+                    profiles.add(newProfileName);
+                    profilesAdapter.notifyDataSetChanged();
                     //Do something
                 } else dialog.cancel();
 
