@@ -4,21 +4,30 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Vibrator;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.humdinger.humdinger.Networker.Key;
-import com.humdinger.humdinger.Networker.SocketClient;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
+
+import static com.humdinger.humdinger.MenuActivity.selectedProfile;
 
 public class ControllerView extends SurfaceView implements Runnable, View.OnTouchListener {
 
@@ -45,39 +54,49 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(3f);
 
-        //Get the size of the window screen
-        Point screenSize = new Point();
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        windowManager.getDefaultDisplay().getSize(screenSize);
-        int x = screenSize.x;
-        int y = screenSize.y;
-
-        //Add button A
-        buttons.add(new CircleButton(0.85f * x, 0.5f * y, 100f, 'A', Color.GREEN, "A"));
-        //Add button B
-        buttons.add(new CircleButton(0.775f * x, 0.7f * y, 100f, 'B', Color.RED, "B"));
-        //Add button X
-        buttons.add(new CircleButton(0.775f * x, 0.3f * y, 100f, 'X', Color.BLUE, "X"));
-        //Add button Y
-        buttons.add(new CircleButton(0.7f * x, 0.5f * y, 100f, 'Y', Color.YELLOW, "Y"));
-
-        //Add start button
-        buttons.add(new RectButton(0.5f * x, 0.4f * y, 100f, 200f, 't', Color.CYAN, "Start"));
-        //Add select button
-        buttons.add(new RectButton(0.4f * x, 0.4f * y, 100f, 200f, 'y', Color.CYAN, "Select"));
-
-        //Add the Directional pad
-        new DirectionalPad(0.05f * x, 0.25f * y, 510, 'w', 'd', 's', 'a', Color.MAGENTA, buttons);
-        //Add the left button
-        buttons.add(new RectButton(0f * x, 0f * y, 450, 200, 'q', Color.GREEN, "Left"));
-        //Add the right button
-        buttons.add(new RectButton(0.75f * x, 0f * y, 450, 200, 'e', Color.GREEN, "Right"));
+        buttonSetup();
 
         //Create new SocketClient and start networking thread
         //gamePad = new ArrayBlockingQueue<>(buttons.size());
         //SocketClient sockClient = new SocketClient("192.168.1.142", 21000, gamePad);
         //pass IP and port to client socket
         //new Thread(sockClient).start(); // Start new client socket
+    }
+
+    private void buttonSetup() {
+        String JsonString = readFromFile(selectedProfile);
+        try {
+            JSONArray buttonsInJSON = new JSONArray(JsonString);
+
+            for (int i = 0; i < buttonsInJSON.length(); i++) {
+                JSONObject currentButton = buttonsInJSON.getJSONObject(i);
+                createButton(currentButton);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void createButton(JSONObject buttonInfo) {
+        try {
+            String buttonType = (String) buttonInfo.get("name");
+            //Every button has coordinates
+            JSONArray coordinates = buttonInfo.getJSONArray("coordinates");
+
+            if (buttonType.equals("CircleButton")) {
+                buttons.add(new CircleButton((float) coordinates.getDouble(0), (float) coordinates.getDouble(1), (float) buttonInfo.getDouble("radius"),
+                        (char) buttonInfo.getInt("message"), buttonInfo.getInt("color"), buttonInfo.getString("text")));
+            } else if (buttonType.equals("RectButton")) {
+                buttons.add(new RectButton((float) coordinates.getDouble(0), (float) coordinates.getDouble(1), (float) buttonInfo.getDouble("width"),
+                        (float) buttonInfo.getDouble("height"), (char) buttonInfo.getInt("message"), buttonInfo.getInt("color"), buttonInfo.getString("text")));
+            } else if (buttonType.equals("DirectionalPad")) {
+                new DirectionalPad((float) coordinates.getDouble(0), (float) coordinates.getDouble(1), (float) buttonInfo.getDouble("width"), (char) buttonInfo.getInt("messageUp"),
+                        (char) buttonInfo.getInt("messageRight"), (char) buttonInfo.getInt("messageDown"), (char) buttonInfo.getInt("messageLeft"), buttonInfo.getInt("color"), buttons);
+            } else Log.e(LOG_TAG, "Didn't find a button called " + buttonType);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -201,6 +220,34 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
             }
         }
         return true;
+    }
+
+    private String readFromFile(String fileName) {
+        String content = "";
+
+        try {
+            InputStream inputStream = getContext().openFileInput(fileName);
+
+            if (inputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString;
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ((receiveString = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(receiveString);
+                }
+
+                inputStream.close();
+                content = stringBuilder.toString();
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(LOG_TAG, "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Can not read file: " + e.toString());
+        }
+
+        return content;
     }
 }
 

@@ -1,13 +1,11 @@
 package com.humdinger.humdinger;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,15 +14,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Scanner;
+
+import static com.humdinger.humdinger.MenuActivity.selectedProfile;
 
 public class ProfilesActivity extends AppCompatActivity {
     private static final String LOG_TAG = ProfilesActivity.class.getSimpleName();
-    ArrayAdapter profilesAdapter;
     final ArrayList<String> profiles = new ArrayList<>();
+    ArrayAdapter profilesAdapter;
     private String newProfileName;
 
     @Override
@@ -32,13 +32,18 @@ public class ProfilesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profiles);
 
-        ListView listView = (ListView) findViewById(R.id.list);
+        final TextView profileTextView = (TextView) findViewById(R.id.profiles_textView_currentProfile);
+        profileTextView.setText(selectedProfile);
+        final ListView listView = (ListView) findViewById(R.id.list);
 
         //Select profile
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(ProfilesActivity.this, "This selects the new profile nr "+i,Toast.LENGTH_SHORT).show();
+                TextView clickedItem = (TextView) view;
+                String clickedProfileName = (String) clickedItem.getText();
+                profileTextView.setText(clickedProfileName);
+                MenuActivity.selectedProfile = clickedProfileName;
             }
         });
 
@@ -67,15 +72,6 @@ public class ProfilesActivity extends AppCompatActivity {
 
         profilesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, profiles);
         listView.setAdapter(profilesAdapter);
-
-//        Scanner scanner = new Scanner(getResources().openRawResource(R.raw.snes));
-//
-//        while (scanner.hasNext()) {
-//            String word = scanner.next();
-//            Log.v(LOG_TAG, word);
-//        }
-//        scanner.close();
-
     }
 
     @Override
@@ -96,6 +92,7 @@ public class ProfilesActivity extends AppCompatActivity {
             case R.id.title_edit:
                 Toast.makeText(ProfilesActivity.this,"You click on edit ",Toast.LENGTH_SHORT).show();
                 return true;
+            //ToDo: What if I delete current profile?
             case R.id.title_delete:
                 Toast.makeText(ProfilesActivity.this,"Removed: "+profiles.get(info.position),Toast.LENGTH_SHORT).show();
                 profiles.remove(info.position);
@@ -104,10 +101,6 @@ public class ProfilesActivity extends AppCompatActivity {
             default:
                 return super.onContextItemSelected(item);
         }
-    }
-
-    public void send(String option){
-        Log.e(LOG_TAG,"Vajutasid "+option);
     }
 
     private void popUpDialog() {

@@ -3,10 +3,8 @@ package com.humdinger.humdinger;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -14,24 +12,33 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class MenuActivity extends AppCompatActivity {
     private final String LOG_TAG = MenuActivity.class.getSimpleName();
     private String ipAddress;
+    public static String selectedProfile = "SNES";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        //Get the size of the windows screen in pixels
-        Point screenSize = new Point();
-        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        windowManager.getDefaultDisplay().getSize(screenSize);
-        int x = screenSize.x;
-        int y = screenSize.y;
-        firstTimeSetup(screenSize.x, screenSize.y);
-        Log.e(LOG_TAG,"x:"+x+"y:"+y);
+        //ToDO: Profile variable needs to be in persistent storage
+        final TextView profileTextView = (TextView) findViewById(R.id.menu_textView_currentProfile);
+        profileTextView.setText(selectedProfile);
+
+        //SnesSetup(readSetupFile());
 
 //        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //        if (!prefs.getBoolean("firstTime", false)) {
@@ -42,6 +49,13 @@ public class MenuActivity extends AppCompatActivity {
 //            editor.putBoolean("firstTime", true);
 //            editor.apply();
 //        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TextView profileTextView = (TextView) findViewById(R.id.menu_textView_currentProfile);
+        profileTextView.setText(selectedProfile);
     }
 
     public void toSettingsActivity(View view) {
@@ -115,7 +129,76 @@ public class MenuActivity extends AppCompatActivity {
         builder.show();
     }
 
-    public void firstTimeSetup(int screenWidth,int screenHeight){
+    public String readSetupFile() {
+        String textLine;
+        StringBuilder fileContent = new StringBuilder();
+        InputStream inputStream = getResources().openRawResource(R.raw.setup);
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+        try {
+            while ((textLine = bufferedReader.readLine()) != null) {
+                fileContent.append(textLine);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                inputStream.close();
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return fileContent.toString();
+    }
+
+    public void SnesSetup(String JsonString) {
+        //Get the size of the windows screen in pixels
+        Point screenSize = new Point();
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getSize(screenSize);
+        int screenWidth = screenSize.x;
+        int screenHeight = screenSize.y;
+
+        //Read the initial x;y multipliers from JSON file and convert them into actual
+        //x,y coordinates  using the current devices display size
+        try {
+            JSONArray buttons = new JSONArray(JsonString);
+            for (int i = 0; i < buttons.length(); i++) {
+                JSONObject currentButton = buttons.getJSONObject(i);
+                JSONArray coordinates = currentButton.getJSONArray("coordinates");
+                double x = (double) coordinates.get(0);
+                double y = (double) coordinates.get(1);
+
+                x *= screenWidth;
+                y *= screenHeight;
+
+                JSONArray newCoordinates = new JSONArray();
+                newCoordinates.put(x);
+                newCoordinates.put(y);
+
+                currentButton.put("coordinates", newCoordinates);
+            }
+            writeToStorage(selectedProfile, buttons.toString());
+        } catch (JSONException | IOException e) {
+            //ToDo: Error handling
+            e.printStackTrace();
+        }
+    }
+
+    //Writes the new SNES.txt profile file into Android internal storage
+    public void writeToStorage(String fileName, String content) throws IOException {
+        FileOutputStream fos = null;
+        try {
+            fos = openFileOutput(fileName, Context.MODE_PRIVATE);
+            fos.write(content.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            assert fos != null;
+            fos.close();
+        }
 
     }
 }

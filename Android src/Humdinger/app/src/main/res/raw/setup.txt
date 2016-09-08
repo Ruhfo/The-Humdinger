@@ -1,0 +1,107 @@
+[
+  {
+    "color": -16711936,
+    "name": "CircleButton",
+    "coordinates": [
+      0.8500000238418579,
+      0.5
+    ],
+    "text": "A",
+    "radius": 100,
+    "message": 65
+  },
+  {
+    "color": -65536,
+    "name": "CircleButton",
+    "coordinates": [
+      0.7749999761581421,
+      0.699999988079071
+    ],
+    "text": "B",
+    "radius": 100,
+    "message": 66
+  },
+  {
+    "color": -16776961,
+    "name": "CircleButton",
+    "coordinates": [
+      0.7749999761581421,
+      0.30000001192092896
+    ],
+    "text": "X",
+    "radius": 100,
+    "message": 88
+  },
+  {
+    "color": -256,
+    "name": "CircleButton",
+    "coordinates": [
+      0.699999988079071,
+      0.5
+    ],
+    "text": "Y",
+    "radius": 100,
+    "message": 89
+  },
+  {
+    "color": -16711681,
+    "name": "RectButton",
+    "coordinates": [
+      0.5,
+      0.4000000059604645
+    ],
+    "width": 100,
+    "text": "Start",
+    "message": 116,
+    "height": 200
+  },
+  {
+    "color": -16711681,
+    "name": "RectButton",
+    "coordinates": [
+      0.4000000059604645,
+      0.4000000059604645
+    ],
+    "width": 100,
+    "text": "Select",
+    "message": 121,
+    "height": 200
+  },
+  {
+    "color": -16711936,
+    "name": "RectButton",
+    "coordinates": [
+      0.0,
+      0.0
+    ],
+    "width": 450,
+    "text": "Left",
+    "message": 113,
+    "height": 200
+  },
+  {
+    "color": -16711936,
+    "name": "RectButton",
+    "coordinates": [
+      0.75,
+      0.0
+    ],
+    "width": 450,
+    "text": "Right",
+    "message": 101,
+    "height": 200
+  },
+  {
+    "color": -65281,
+    "messageDown": 115,
+    "name": "DirectionalPad",
+    "coordinates": [
+      0.05000000074505806,
+      0.25
+    ],
+    "width": 510,
+    "messageUp": 119,
+    "messageRight": 100,
+    "messageLeft": 97
+  }
+]
