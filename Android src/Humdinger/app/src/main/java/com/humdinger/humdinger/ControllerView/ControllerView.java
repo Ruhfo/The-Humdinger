@@ -12,8 +12,11 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Toast;
 
+import com.humdinger.humdinger.ControllerActivity;
 import com.humdinger.humdinger.Networker.Key;
+import com.humdinger.humdinger.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,9 +76,9 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
                 createButton(currentButton);
             }
         } catch (JSONException e) {
+            Toast.makeText(getContext(), "Could't load profile: "+selectedProfile,Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-
     }
 
     private void createButton(JSONObject buttonInfo) {
@@ -84,16 +87,23 @@ public class ControllerView extends SurfaceView implements Runnable, View.OnTouc
             //Every button has coordinates
             JSONArray coordinates = buttonInfo.getJSONArray("coordinates");
 
-            if (buttonType.equals("CircleButton")) {
-                buttons.add(new CircleButton((float) coordinates.getDouble(0), (float) coordinates.getDouble(1), (float) buttonInfo.getDouble("radius"),
-                        (char) buttonInfo.getInt("message"), buttonInfo.getInt("color"), buttonInfo.getString("text")));
-            } else if (buttonType.equals("RectButton")) {
-                buttons.add(new RectButton((float) coordinates.getDouble(0), (float) coordinates.getDouble(1), (float) buttonInfo.getDouble("width"),
-                        (float) buttonInfo.getDouble("height"), (char) buttonInfo.getInt("message"), buttonInfo.getInt("color"), buttonInfo.getString("text")));
-            } else if (buttonType.equals("DirectionalPad")) {
-                new DirectionalPad((float) coordinates.getDouble(0), (float) coordinates.getDouble(1), (float) buttonInfo.getDouble("width"), (char) buttonInfo.getInt("messageUp"),
-                        (char) buttonInfo.getInt("messageRight"), (char) buttonInfo.getInt("messageDown"), (char) buttonInfo.getInt("messageLeft"), buttonInfo.getInt("color"), buttons);
-            } else Log.e(LOG_TAG, "Didn't find a button called " + buttonType);
+            switch (buttonType) {
+                case "CircleButton":
+                    buttons.add(new CircleButton((float) coordinates.getDouble(0), (float) coordinates.getDouble(1), (float) buttonInfo.getDouble("radius"),
+                            (char) buttonInfo.getInt("message"), buttonInfo.getInt("color"), buttonInfo.getString("text")));
+                    break;
+                case "RectButton":
+                    buttons.add(new RectButton((float) coordinates.getDouble(0), (float) coordinates.getDouble(1), (float) buttonInfo.getDouble("width"),
+                            (float) buttonInfo.getDouble("height"), (char) buttonInfo.getInt("message"), buttonInfo.getInt("color"), buttonInfo.getString("text")));
+                    break;
+                case "DirectionalPad":
+                    new DirectionalPad((float) coordinates.getDouble(0), (float) coordinates.getDouble(1), (float) buttonInfo.getDouble("width"), (char) buttonInfo.getInt("messageUp"),
+                            (char) buttonInfo.getInt("messageRight"), (char) buttonInfo.getInt("messageDown"), (char) buttonInfo.getInt("messageLeft"), buttonInfo.getInt("color"), buttons);
+                    break;
+                default:
+                    Log.e(LOG_TAG, "Didn't find a button called " + buttonType);
+                    break;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

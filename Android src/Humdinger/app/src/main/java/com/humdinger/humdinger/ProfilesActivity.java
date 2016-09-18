@@ -18,14 +18,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.humdinger.humdinger.MenuActivity.selectedProfile;
 
 public class ProfilesActivity extends AppCompatActivity {
     private static final String LOG_TAG = ProfilesActivity.class.getSimpleName();
-    final ArrayList<String> profiles = new ArrayList<>();
     ArrayAdapter profilesAdapter;
     private String newProfileName;
+    List<String> profiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +58,12 @@ public class ProfilesActivity extends AppCompatActivity {
             }
         });
 
-        //Edit or delete profile
+        //Edit or delete profile contextMenu
         registerForContextMenu(listView);
 
-        profiles.add("SNES");
-        profiles.add("Test1");
-        profiles.add("Test2");
-        profiles.add("Test3");
-        profiles.add("Test4");
-        profiles.add("Test5");
-        profiles.add("Test6");
-        profiles.add("Test7");
-        profiles.add("Test8");
-        profiles.add("Test9");
+        //ToDo: The file "instant-run" needs to be removed from the list - created by the IDE
+        String[] filesInStorage = fileList();
+        profiles = Arrays.asList(filesInStorage);
 
         profilesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, profiles);
         listView.setAdapter(profilesAdapter);

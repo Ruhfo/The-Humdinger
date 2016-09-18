@@ -38,7 +38,7 @@ public class MenuActivity extends AppCompatActivity {
         final TextView profileTextView = (TextView) findViewById(R.id.menu_textView_currentProfile);
         profileTextView.setText(selectedProfile);
 
-        //SnesSetup(readSetupFile());
+        //snesSetup(readSetupFile());
 
 //        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //        if (!prefs.getBoolean("firstTime", false)) {
@@ -153,7 +153,7 @@ public class MenuActivity extends AppCompatActivity {
         return fileContent.toString();
     }
 
-    public void SnesSetup(String JsonString) {
+    public void snesSetup(String JsonString) {
         //Get the size of the windows screen in pixels
         Point screenSize = new Point();
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
