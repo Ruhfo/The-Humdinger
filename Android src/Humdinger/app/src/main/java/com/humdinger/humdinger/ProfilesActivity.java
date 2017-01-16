@@ -1,11 +1,13 @@
 package com.humdinger.humdinger;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +66,8 @@ public class ProfilesActivity extends AppCompatActivity {
 
         //ToDo: The file "instant-run" needs to be removed from the list - created by the IDE
         String[] filesInStorage = fileList();
-        profiles = Arrays.asList(filesInStorage);
+        profiles = new ArrayList<String>(Arrays.asList(filesInStorage));
+
 
         profilesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, profiles);
         listView.setAdapter(profilesAdapter);
@@ -85,14 +89,22 @@ public class ProfilesActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.title_edit:
-                Toast.makeText(ProfilesActivity.this,"You click on edit ",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ProfilesActivity.this,"You clicked on edit ",Toast.LENGTH_SHORT).show();
                 return true;
             //ToDo: What if I delete current profile?
             case R.id.title_delete:
-                Toast.makeText(ProfilesActivity.this,"Removed: "+profiles.get(info.position),Toast.LENGTH_SHORT).show();
-                profiles.remove(info.position);
-                profilesAdapter.notifyDataSetChanged();
-                return true;
+                //If the user wants to delete a profile other than the one currently selected
+                if(!MenuActivity.selectedProfile.equals(profiles.get(info.position))){
+                    Toast.makeText(ProfilesActivity.this,"Removed: "+profiles.get(info.position),Toast.LENGTH_SHORT).show();
+                    profiles.remove(info.position);
+                    profilesAdapter.notifyDataSetChanged();
+                    return true;
+                }
+                //If the user wants to delete a profile that is currently selected as the main profile
+                else{
+                    Toast.makeText(ProfilesActivity.this,"Can't remove profile "+profiles.get(info.position)+" because it's currently in use!",Toast.LENGTH_LONG).show();
+                    return false;
+                }
             default:
                 return super.onContextItemSelected(item);
         }
@@ -103,7 +115,7 @@ public class ProfilesActivity extends AppCompatActivity {
         builder.setTitle("Enter custom profile name");
         // Set up the input
         final EditText input = new EditText(this);
-        //input.setHint("Profile name");
+        input.setHint("Profile name");
         // Specify the type of input expected - a string with numbers;
         input.setInputType(InputType.TYPE_CLASS_TEXT );
         builder.setView(input);
@@ -112,10 +124,12 @@ public class ProfilesActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 newProfileName = input.getText().toString();
+                Log.v(LOG_TAG,newProfileName);
                 //Check if the user actually entered something
                 if (!newProfileName.isEmpty()) {
                     profiles.add(newProfileName);
                     profilesAdapter.notifyDataSetChanged();
+                    writeToStroage(newProfileName);
                     //Do something
                 } else dialog.cancel();
 
@@ -128,5 +142,17 @@ public class ProfilesActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    private void writeToStroage(String fileName){
+        FileOutputStream outputStream;
+        String dummyData = "[]";
+        try {
+            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+            outputStream.write(dummyData.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

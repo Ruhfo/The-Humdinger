@@ -3,8 +3,10 @@ package com.humdinger.humdinger;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -38,17 +40,17 @@ public class MenuActivity extends AppCompatActivity {
         final TextView profileTextView = (TextView) findViewById(R.id.menu_textView_currentProfile);
         profileTextView.setText(selectedProfile);
 
-        //snesSetup(readSetupFile());
 
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//        if (!prefs.getBoolean("firstTime", false)) {
-//            // <---- run your one time code here
-//
-//            // mark first time has runned.
-//            SharedPreferences.Editor editor = prefs.edit();
-//            editor.putBoolean("firstTime", true);
-//            editor.apply();
-//        }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!prefs.getBoolean("firstTime", false)) {
+            // <---- run your one time code here
+            snesSetup(readSetupFile());
+            // mark first time has runned.
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("firstTime", true);
+            editor.apply();
+        }
     }
 
     @Override
